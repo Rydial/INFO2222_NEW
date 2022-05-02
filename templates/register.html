@@ -1,0 +1,32 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="css/register.css">
+</head>
+
+<body>
+<form action="/register" method="post" id="registerForm">
+    <div class="container">
+        <center>
+            <h1>Register</h1>
+
+            <p>${fail_reason}</p>
+        </center>
+        <hr>
+
+        <label for="username"><b>Username</b></label>
+        <input type="text" placeholder="Enter Username" name="username" required>
+
+        <label for="password"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="password" required>
+
+        <label for="pwd_confirm"><b>Confirm Password</b></label>
+        <input type="password" placeholder="Confirm Password" name="pwd_confirm" required>
+        <hr>
+
+        <button type="submit" class="registerButton">Register</button>
+    </div>
+    
+    <div class="signin">
+        <p>Already have an account? <a href="/login">Sign in</a></p>
+    </div>
+</form>
+</body>

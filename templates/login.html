@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" type="text/css" href="css/login.css">
+</head>
+
+<body>
+    <form action="/login" method="post" id="loginForm">
+        <div class="container">
+            <center>
+                <h1>Login</h1>
+
+                <p>${fail_reason}</p>
+            </center>
+
+            <hr>
+
+            <label for="username"><b>Username</b></label>
+            <input type="text" placeholder="Enter Username"
+                name="username" id="username" required>
+
+            <label for="password"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password"
+                name="password" id="password" required>
+
+            <hr>
+
+            <button type="submit" class="loginButton" onclick="login()">Log In</button>
+        </div>
+        
+        <div class="signup">
+            <p>
+                Don't have an account? <a href="/register">Sign up</a>
+            </p>
+        </div>
+    </form>
+</body>
