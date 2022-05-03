@@ -151,7 +151,7 @@ class DB():
 
         # Add a new Entry in the 'users' Database
         with open("data/users.csv", "a+") as file:
-            file.write(",".join([username, str(admin), str(0)]))
+            file.write(f"{','.join([username, str(admin), str(0)])}\n")
         
         # Add new Entry to the "users" Table
         database.create_table_entry("users", [username, admin, 0])
@@ -172,7 +172,7 @@ class DB():
 
         # Add a new Entry in the 'passwords' Database
         with open("data/passwords.csv", "a+") as file:
-            file.write(",".join([username, hash.hex(), salt.hex()]))
+            file.write(f"{','.join([username, hash.hex(), salt.hex()])}\n")
 
         # Add new Entry to the "passwords" Table
         database.create_table_entry("passwords", [username, hash, salt])
@@ -184,7 +184,7 @@ class DB():
 
         # Add a new Entry in the 'public_keys' Database
         with open("data/public_keys.csv", "a+") as file:
-            file.write(",".join([username, encPubK, sigPubK]))
+            file.write(f"{','.join([username, encPubK, sigPubK])}\n")
 
         # Add new Entry to the "public_keys" Table
         database.create_table_entry("public_keys", [username, encPubK, sigPubK])
@@ -270,15 +270,15 @@ class DB():
 
         with open("data/users.csv", "w") as file:
             for user, admin, loggedIn in self.tables['users'].entries:
-                file.write(",".join([user, str(admin), str(loggedIn)]))
+                file.write(f"{','.join([user, str(admin), str(loggedIn)])}\n")
         
         with open("data/passwords.csv", "w") as file:
             for user, hash, salt in self.tables['passwords'].entries:
-                file.write(",".join([user, hash.hex(), salt.hex()]))
+                file.write(f"{','.join([user, hash.hex(), salt.hex()])}\n")
 
         with open("data/public_keys.csv", "w") as file:
             for user, encPubK, sigPubK in self.tables['public_keys'].entries:
-                file.write(",".join([user, encPubK, sigPubK]))
+                file.write(f"{','.join([user, encPubK, sigPubK])}\n")
 
         return
 
