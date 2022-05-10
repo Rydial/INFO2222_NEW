@@ -1,3 +1,4 @@
+import json
 
 import view
 from no_sql_db import database
@@ -27,7 +28,21 @@ def login_form():
     '''
     return page_view("login", fail_reason="")
 
-#-------------------------------------------------------------------------------
+
+def get_user_details(username) -> str:
+
+    # Retrive User's 'users' Table Entry
+    user = database.search_table("users", "username", username)
+
+    # Encapsulate Values in JSON Format
+    form = {
+        'admin': str(bool(user[1])),
+        'muted': str(bool(user[2])),
+        'online': str(bool(user[-1]))
+    }
+
+    return json.dumps(form)
+
 
 def login_check(username, password):
     '''
@@ -42,14 +57,13 @@ def login_check(username, password):
     '''
 
     # Check User Login Credentials
-    if database.try_login(username, password) == True:
+    if (err := database.try_login(username, password)) != None:
+        return page_view("login", fail_reason=err)
+    else:
         # Set the User as Logged In
         database.set_online(username)
 
         return page_view("login_success", name=username)
-    else:
-        return page_view("login",
-            fail_reason="Incorrect Username or Password. Please Try Again.")
         
 #-------------------------------------------------------------------------------
 # Register
@@ -60,33 +74,49 @@ def register_form():
         register_form
         Returns the view for the register_form
     '''
-    return page_view("register", fail_reason="")
+    return page_view("register")
 
-#-------------------------------------------------------------------------------
 
-def register_check(username, password, confirmation):
+def register_success_page(username):
+    '''
+        register_success_page
+        Returns the view for the register_success_page
+    '''
+    return page_view("register_success", name=username)
 
-    # Check if Password matches Password Confirmation
-    if password != confirmation:
-        return page_view("register",
-            fail_reason="Passwords do not match. Please Try Again.")
+
+def register_check(username, password):
+
+    # Constants
+    MAX_USERS = 8
+
+    if len(database.tables['users'].entries) == MAX_USERS:
+        return "Maximum User Capacity Reached. Cannot register any more users."
     
     # Retrieve User's 'users' Table Entry
     user = database.search_table("users", "username", username)
 
     # Check if User exists
     if user is not None:
-        return page_view("register",
-            fail_reason="Username already exists. Please Try Again.")
+        return "Username already exists. Please Try Again."
 
     # Create a new User in the Database
     database.add_user(username, password)
 
+    print('-----------------------------')
+    print(f"Created User: {username}")
+
     # Register Success
-    return page_view("register_success", name=username)
+    return ""
 
 
 def store_public_keys(username, encPubK, sigPubK):
+
+    print(f"Storing Public Keys: {username}")
+
+    # Let Server know public keys are being stored
+    global publicKeysStored
+    publicKeysStored = True
 
     # Add the Public Keys to the specified User
     return database.add_user_public_keys(username, encPubK, sigPubK)
@@ -101,6 +131,128 @@ def message_form():
         Returns the view for the message_form
     '''
     return page_view("message")
+
+
+def get_other_users(username):
+    
+    # Create a List of Usernames (Excluding Specified Username)
+    users = []
+
+    for entry in database.tables['users'].entries:
+        # Extract Username
+        other_username = entry[0]
+
+        if other_username != username:
+
+            # Encapsulate Values in a Form
+            formData = {
+                'username': entry[0],
+                'admin': str(bool(entry[1])),
+                'muted': str(bool(entry[2])),
+                'online': str(bool(entry[-1]))
+            }
+
+            # Store Form in List
+            users.append(formData)
+    
+    # Return a formatted string of Usernames
+    return json.dumps(users)
+
+
+def get_user_public_key(username, key_type) -> str:
+
+    # Retrive Specified User Public Key
+    entry = database.search_table('public_keys', 'username', username)
+
+    return entry[key_type]
+
+
+def get_user_messages(username):
+
+    # Retrieve User Entry in 'messages' Table
+    entry = database.search_table('messages', 'username', username)
+
+    return entry[1]
+
+
+def store_encrypted_message(receiver, encryptedMsg):
+
+    # Retrieve Receiver Entry in the 'messages' Table
+    entry = database.search_table('messages', 'username', receiver)
+
+    # Append a new Message Entry into the Receiver's Messages
+    if entry[1] == '[]':
+        entry[1] = entry[1][:-1] + encryptedMsg + entry[1][-1:]
+    else:
+        entry[1] = entry[1][:-1] + ',' + encryptedMsg + entry[1][-1:]
+
+    # Update Messages Database File
+    database.update_messages_database()
+
+    return
+
+#-------------------------------------------------------------------------------
+# Admin
+#-------------------------------------------------------------------------------
+
+def admin_form():
+    '''
+        admin_form
+        Returns the view for the admin_form
+    '''
+    return page_view("admin")
+
+
+def delete_user(username):
+    
+    print('-----------------------------')
+    print(f"Deleting User: {username}")
+    
+    # Remove User Entry from every Table
+    for table in database.tables:
+        entry = database.search_table(table, 'username', username)
+        database.tables[table].entries.remove(entry)
+
+    # Remove All Messages Sent by the User
+    for entry in database.tables['messages'].entries:
+        
+        # Retrieve Messages in JSON Format
+        messages = json.loads(entry[1])
+        
+        # Filter out messages sent by the specified User
+        entry[1] = json.dumps([x for x in messages if x['sender'] != username])
+
+    # Update Every Database File
+    database.update_users_database()
+    database.update_passwords_database()
+    database.update_public_keys_database()
+    database.update_messages_database()
+
+
+def mute_user(username):
+
+    print('-----------------------------')
+    print(f"Muting User: {username}")
+
+    entry = database.search_table('users', 'username', username)
+
+    entry[2] = 1
+
+    # Update Every Database File
+    database.update_users_database()
+
+
+def unmute_user(username):
+
+    print('-----------------------------')
+    print(f"Unmuting User: {username}")
+
+    entry = database.search_table('users', 'username', username)
+
+    entry[2] = 0
+
+    # Update Every Database File
+    database.update_users_database()
 
 #-------------------------------------------------------------------------------
 # Logout

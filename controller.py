@@ -97,6 +97,20 @@ def post_login():
     # Call the appropriate method
     return model.login_check(username, password)
 
+
+@get('/user_details.json')
+def get_user_details():
+    '''
+        get_user_details
+        Param: 'username'
+        Return Specified User's Details
+    '''
+    
+    # Retrieve Username from Query Paramters
+    username = request.query['username']
+
+    return model.get_user_details(username)
+
 #-------------------------------------------------------------------------------
 # Register
 #-------------------------------------------------------------------------------
@@ -111,31 +125,45 @@ def get_register_controller():
     return model.register_form()
 
 
+@get('/register_success')
+def get_register_success():
+    '''
+        get__register_success
+        
+        Params: 'username'
+    '''
+
+    # Retrieve Form Field Values
+    username = request.query['username']
+
+    # Call Appropriate Function
+    return model.register_success_page(username) 
+
+
 @post('/register')
 def post_register():
     '''
         post_register
         
         Handles register attempts
-        Expects a form containing 'username', 'password', and 'pwd_confirm'
+        Expects a form containing 'username', 'password'
         fields
     '''
 
     # Retrieve Necessary Fields
     username = request.forms.get("username")
     password = request.forms.get("password")
-    confirmation = request.forms.get("pwd_confirm")
 
     # Call the appropriate method
-    return model.register_check(username, password, confirmation)
+    return model.register_check(username, password)
 
 
 @post('/public_keys.data')
-def retrieve_public_keys():
+def post_public_keys():
     '''
-    retrive_public_keys
+    post_public_keys
 
-    Fields are 'username', 'encPubK', and 'sigPubK'
+    Fields: 'username', 'encPubK', 'sigPubK'
     '''
 
     # Retrieve Form Field Values
@@ -144,7 +172,7 @@ def retrieve_public_keys():
     sigPubK = request.forms.get('sigPubK')
 
     # Call Appropriate Method
-    return model.store_public_keys(username, encPubK, sigPubK)
+    model.store_public_keys(username, encPubK, sigPubK)
 
 #-------------------------------------------------------------------------------
 # Message
@@ -158,6 +186,115 @@ def get_message_controller():
         Serves the message page
     '''
     return model.message_form()
+
+
+@get('/other_users.json')
+def get_other_users():
+    '''
+        get_other_users
+        Param: 'username'
+        Return Every Username excluding Specified Username
+    '''
+
+    # Retrieve Username from Query Paramters
+    username = request.query['username']
+
+    return model.get_other_users(username)
+
+
+@get('/user_public_key.json')
+def get_user_public_key():
+    '''
+        get_user_public_key
+        Param: 'username', 'key_type'
+        Return Specified User Public Key
+    '''
+    
+    # Retrieve Username from Query Paramters
+    username = request.query['username']
+    key_type = request.query['key_type']
+
+    return model.get_user_public_key(username, int(key_type))
+
+
+@get('/user_messages.json')
+def get_user_messages():
+    '''
+        Param: 'username'
+        
+        Return Specified User's Messages
+    '''
+    
+    # Retrieve Username from Query Paramters
+    username = request.query['username']
+
+    return model.get_user_messages(username)
+
+
+@post('/encrypted_message.data')
+def post_encrypted_message():
+    '''
+    Fields: 'receiver', 'encryptedMsg'
+    '''
+
+    # Retrieve Form Field Values
+    receiver = request.forms.get('receiver')
+    encryptedMsg = request.forms.get('encryptedMsg')
+
+    # Call Appropriate Method
+    model.store_encrypted_message(receiver, encryptedMsg)
+
+#-------------------------------------------------------------------------------
+# Admin
+#-------------------------------------------------------------------------------
+
+@get('/admin')
+def get_admin_controller():
+    '''
+        get_admin
+        
+        Serves the admin page
+    '''
+    return model.admin_form()
+
+
+@post('/delete_user.request')
+def post_delete_user():
+    '''
+    Fields: 'username'
+    '''
+
+    # Retrieve Form Field Values
+    username = request.forms.get('username')
+
+    # Call Appropriate Method
+    model.delete_user(username)
+
+
+@post('/mute_user.request')
+def post_mute_user():
+    '''
+    Fields: 'username'
+    '''
+
+    # Retrieve Form Field Values
+    username = request.forms.get('username')
+
+    # Call Appropriate Method
+    model.mute_user(username)
+
+
+@post('/unmute_user.request')
+def post_unmute_user():
+    '''
+    Fields: 'username'
+    '''
+
+    # Retrieve Form Field Values
+    username = request.forms.get('username')
+
+    # Call Appropriate Method
+    model.unmute_user(username)
 
 #-------------------------------------------------------------------------------
 # Logout

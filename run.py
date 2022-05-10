@@ -3,12 +3,10 @@
 
 import os
 import sys
-from bottle import run
+import bottle
 
 #-----------------------------------------------------------------------------
 
-import model
-import view
 import controller
 
 #-----------------------------------------------------------------------------
@@ -28,7 +26,7 @@ def run_server():
             config[param] = value
 
     # Run the Server
-    run(
+    bottle.run(
         host=config["host"],
         port=int(config["port"]),
         server=config["server"],
@@ -36,7 +34,7 @@ def run_server():
         certfile=config["certfile"],
         reloader=int(config["reloader"]),
         debug=bool(config["debug"]))
-
+    
 #-----------------------------------------------------------------------------
 
 def manage_db():

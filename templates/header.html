@@ -6,12 +6,24 @@
 </head>
   
 <p>
-  <ul>
-    <li><a class="active" href="/home">Home</a></li>
-    <li><a id="login" href="/login">Login</a></li>
-    <li><a id="message" href="/message">Message</a></li>
-    <!-- <li><a href="/incoming">Incoming Messages</a></li> -->
-    <li><a id="logout" href="/logout">Logout</a></li>
-    <li><a href="/about">About</a></li>
+  <ul class="navbar" id="navbar">
+    <li class="navbar_btn" id="homeNavBtn" onclick="setActiveNavBtn('home')">
+      <a href="/home">Home</a>
+    </li>
+    <li class="navbar_btn" id="loginNavBtn" onclick="setActiveNavBtn('login')">
+      <a href="/login">Login</a>
+    </li>
+    <li class="navbar_btn" id="messageNavBtn" onclick="setActiveNavBtn('message')">
+      <a href="/message">Message</a>
+    </li>
+    <li class="navbar_btn" id="adminNavBtn" onclick="setActiveNavBtn('admin')">
+      <a href="/admin">Admin</a>
+    </li>
+    <li class="navbar_btn" id="logoutNavBtn">
+      <a href="/logout">Logout</a>
+    </li>
+    <li class="navbar_btn" id="aboutNavBtn" onclick="setActiveNavBtn('about')">
+      <a href="/about">About</a>
+    </li>
   </ul>
 <p>

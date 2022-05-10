@@ -1,5 +1,6 @@
-import os
 import hashlib
+import os
+import json
 
 #-------------------------------------------------------------------------------
 
@@ -70,6 +71,7 @@ class DB():
             self.add_table("users",
                 "username",
                 "admin",
+                "muted",
                 "loggedIn"
             )
 
@@ -77,10 +79,13 @@ class DB():
             for entry in file.readlines():
 
                 # Split Entry into Variables
-                user, admin, loggedIn = entry.strip().split(",")
+                user, admin, muted, loggedIn = entry.strip().split(",")
 
-                self.create_table_entry("users",
-                    [user, int(admin), int(loggedIn)])
+                self.create_table_entry(
+                    "users", [user, int(admin), int(muted), 0])
+            
+            # Update Database File
+            self.update_users_database()
         
         #-----------------------------------------------------------------------
 
@@ -132,7 +137,28 @@ class DB():
                 self.create_table_entry("public_keys",
                     [username, encPubK, sigPubK])
 
-            
+        #-----------------------------------------------------------------------
+
+        # Open the 'messages' Database
+        with open("data/messages.csv", "a+") as file:
+
+            # Set File Pointer to the Beginning of the File
+            file.seek(0)
+
+            # Create a new Table Entry "messages" in the Database
+            self.add_table("messages",
+                "username",
+                "messages"
+            )
+
+            # Add each 'entry' into the "messages" Table
+            for entry in file.readlines():
+                
+                # Extract Fields
+                username, messages = entry.strip().split(",", maxsplit=1)
+
+                self.create_table_entry("messages", [username, messages])
+
         return
 
     '''                            Class Methods                             '''
@@ -149,12 +175,12 @@ class DB():
 
     def add_user(self, username, password, admin=0):
 
+        # Add new Entry to the "users" Table
+        database.create_table_entry("users", [username, admin, 0, 0])
+
         # Add a new Entry in the 'users' Database
         with open("data/users.csv", "a+") as file:
-            file.write(f"{','.join([username, str(admin), str(0)])}\n")
-        
-        # Add new Entry to the "users" Table
-        database.create_table_entry("users", [username, admin, 0])
+            file.write(f"{','.join([username, str(admin), str(0), str(0)])}\n")
 
         #-----------------------------------------------------------------------
 
@@ -170,25 +196,34 @@ class DB():
             dklen=128                   # Get a 128 byte hash/key 
         )
 
+        # Add new Entry to the "passwords" Table
+        database.create_table_entry("passwords", [username, hash, salt])
+
         # Add a new Entry in the 'passwords' Database
         with open("data/passwords.csv", "a+") as file:
             file.write(f"{','.join([username, hash.hex(), salt.hex()])}\n")
 
-        # Add new Entry to the "passwords" Table
-        database.create_table_entry("passwords", [username, hash, salt])
+        #-----------------------------------------------------------------------
+
+        # Add new Entry to the "messages" Table
+        database.create_table_entry("messages", [username, '[]'])
+
+        # Add a new Entry in the 'messages' Database
+        with open("data/messages.csv", "a+") as file:
+            file.write(f"{','.join([username, '[]'])}\n")
 
         return
 
 
     def add_user_public_keys(self, username, encPubK, sigPubK):
 
-        # Add a new Entry in the 'public_keys' Database
-        with open("data/public_keys.csv", "a+") as file:
-            file.write(f"{','.join([username, encPubK, sigPubK])}\n")
-
         # Add new Entry to the "public_keys" Table
         database.create_table_entry("public_keys", [username, encPubK, sigPubK])
 
+        # Add a new Entry in the 'public_keys' Database
+        with open("data/public_keys.csv", "a+") as file:
+            file.write(f"{','.join([username, encPubK, sigPubK])}\n")
+        
         return
 
 
@@ -215,8 +250,8 @@ class DB():
         # Set the User's Status as Offline
         user[-1] = 0
 
-        # Update Database File
-        self.update_database()
+        # Update 'users' Database File
+        self.update_users_database()
 
         return
 
@@ -229,56 +264,79 @@ class DB():
         # Set the User's Status as Online
         user[-1] = 1
 
-        # Update Database File
-        self.update_database()
+        # Update 'users' Database File
+        self.update_users_database()
 
         return
 
 
     def try_login(self, username, password):
 
+        print('-----------------------------')
+        print(f"Input Username: {username}")
+        print(f"Input Password: {password}")
+
         # Retrieve User's 'users' Table Entry
         user = self.search_table("users", "username", username)
 
         # Check Username
         if user is None:
-            return False
-
-        # Check if User is already Logged in
-        if user[-1]:
-            return False
+            return "Incorrect Username or Password. Please Try Again."
+        
+        print("Username Exists...")
 
         # Retrieve User's 'passwords' Table Entry
-        user = self.search_table("passwords", "username", username)
+        pwd = self.search_table("passwords", "username", username)
 
         # Hash the Input Password with the stored Salt
         input_hash = hashlib.pbkdf2_hmac(
             "sha256",
             password.encode("utf-8"),
-            user[2],
+            pwd[2],
             100000,
             dklen=128)
         
         # Check Password
-        if input_hash != user[1]:
-            return False
+        if input_hash != pwd[1]:
+            return "Incorrect Username or Password. Please Try Again."
 
-        return True
-
-
-    def update_database(self):
-
-        with open("data/users.csv", "w") as file:
-            for user, admin, loggedIn in self.tables['users'].entries:
-                file.write(f"{','.join([user, str(admin), str(loggedIn)])}\n")
+        print("Password Matches...")
         
+        # Check if User is already Logged in
+        if user[-1]:
+            return "User is already logged in."
+
+        return None
+
+
+    def update_users_database(self):
+        with open("data/users.csv", "w") as file:
+            for entry in self.tables['users'].entries:
+                file.write(f"{','.join([str(x) for x in entry])}\n")
+        
+        return
+
+
+    def update_passwords_database(self):
         with open("data/passwords.csv", "w") as file:
             for user, hash, salt in self.tables['passwords'].entries:
                 file.write(f"{','.join([user, hash.hex(), salt.hex()])}\n")
+        
+        return
+        
 
+    def update_public_keys_database(self):
         with open("data/public_keys.csv", "w") as file:
             for user, encPubK, sigPubK in self.tables['public_keys'].entries:
                 file.write(f"{','.join([user, encPubK, sigPubK])}\n")
+
+        return
+
+
+    def update_messages_database(self):
+        with open("data/messages.csv", "w") as file:
+            for user, messages in self.tables['messages'].entries:
+                file.write(f"{','.join([user, messages])}\n")
 
         return
 

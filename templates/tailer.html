@@ -1,38 +1,5 @@
-<ul>
-  <li><a></a></li>
+<ul class="bar">
+  <li class="navbar_btn"><a></a></li>
 </ul>
 
-<body>
-  <script>
-    function getCookie(cookieName) {
-      let cookies = {};
-
-      // Iterate through each Cookie
-      document.cookie.split(';').forEach(function(cookie) {
-        
-        // Store Cookie as a Key:Value Pair
-        let [key,value] = cookie.split('=');
-        cookies[key.trim()] = value;
-      })
-      
-      return cookies[cookieName];
-    }
-
-    // Retrieve 'username' Cookie
-    var username = getCookie('username');
-
-    if (username == undefined)
-    {
-      document.getElementById('login').style.display = "block";
-      document.getElementById('message').style.display = "none";
-      document.getElementById('logout').style.display = "none";
-    }
-    else
-    {
-      document.getElementById('login').style.display = "none";
-      document.getElementById('message').style.display = "block";
-      document.getElementById('logout').style.display = "block";
-    }
-      
-  </script>
-</body>
+<script src="js/script_tail.js"></script>

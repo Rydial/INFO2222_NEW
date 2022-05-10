@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" type="text/css" href="css/message.css">
+</head>
+
+
+<body>
+
+    <center>
+        <h1>Message</h1>
+    </center>
+
+    <li class="horizontal_bar"><a></a></li>
+
+    
+    <ul class="container">
+
+        <ul class="friend_list" id="card_list">
+            <!-- Cards... -->
+        </ul>
+
+        <div class="multipage_container">
+
+            <ul class="main_page" id="main_page">
+
+                <li class="page_avatar"></li>
+                <li class="page_name"></li>
+                <li class="page_button">
+                    <button onclick="changePage('message_page')">
+                        Send Message
+                    </button>
+                </li>
+                <li class="page_button">
+                    <button onclick="changePage('inbox_page')">
+                        Check Messages
+                    </button>
+                </li>
+                
+            </ul>
+
+
+            <ul class="message_page" id="message_page">
+                <p class="message_output" id="message_output"></p>
+                <li class="message_input">
+                    <textarea id="message_input" onclick="clearMessageOutput()"></textarea>
+                </li>
+                <li class="page_button">
+                    <button onclick="sendMessage()">
+                        Send
+                    </button>
+                </li>
+                <li class="page_button">
+                    <button onclick="changePage('main_page')">
+                        Go Back
+                    </button>
+                </li>
+            </ul>
+
+
+            <ul class="inbox_page" id="inbox_page">
+                <table class="page_table" id="inbox_table">
+                    <tr>
+                      <th>Received Messages</th>
+                    </tr>
+                  </table>
+                <li class="page_button">
+                    <button onclick="changePage('main_page')">
+                        Go Back
+                    </button>
+                </li>
+            </ul>
+
+        </div>
+
+    </ul>
+
+</body>
+
+<script src="js/message_encrypt.js"></script>
+<script src="js/message_decrypt.js"></script>
+<script src="js/message.js"></script>
