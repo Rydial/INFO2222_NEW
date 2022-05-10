@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" type="text/css" href="css/admin.css">
+</head>
+
+
+<body>
+
+    <center>
+        <h1>Admin</h1>
+    </center>
+
+    <li class="horizontal_bar"><a></a></li>
+
+    
+    <ul class="container">
+
+        <ul class="user_list" id="card_list">
+            <!-- Cards... -->
+        </ul>
+
+        <div class="page_container">
+
+            <ul class="main_page" id="main_page">
+                <li class="page_avatar"></li>
+                <li class="page_name"></li>
+                <li class="page_button">
+                    <button id="mute_user_button" onclick="muteUser()">
+                        Mute User
+                    </button>
+                </li>
+                <li class="page_button">
+                    <button onclick="deleteUser()">
+                        Delete User
+                    </button>
+                </li>
+            </ul>
+
+        </div>
+
+    </ul>
+
+</body>
+
+<script src="js/admin.js"></script>
