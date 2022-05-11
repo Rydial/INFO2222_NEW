@@ -109,7 +109,7 @@ async function retrieveMessages()
     var table = document.getElementById('inbox_table');
     
     // Clear Messages
-    while (table.children.length > 1)
+    while (table.children.length > 0)
         table.removeChild(table.lastChild);
 
     // Iterate through each Encrypted Message (Format: JSON)

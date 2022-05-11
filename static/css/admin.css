@@ -26,12 +26,21 @@ ul {
     display: flex;
 }
 
+.dark_mode .container {
+    background-color: rgb(75, 75, 75);
+}
+
 
 .user_list, .page_container {
     height: 520px;
     padding: 20px;
     background-color: #ffffff;
 }
+
+.dark_mode .user_list, .dark_mode .page_container {
+    background-color: black;
+}
+
 
 
 .user_list {
@@ -57,6 +66,11 @@ ul {
 }
 
 
+.dark_mode .user_card:hover .card_name {
+    color: black;
+}
+
+
 .user_card:active {
     background-color: #f1f1f1;
 }
@@ -64,6 +78,11 @@ ul {
 
 .active_card {
     background-color: #E4E4E4;
+}
+
+
+.dark_mode .active_card .card_name {
+    color: black;
 }
 
 

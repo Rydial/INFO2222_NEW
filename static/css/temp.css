@@ -6,21 +6,35 @@
     background-color: #333;
 }
 
-.navbar_btn {
+.navbar_btn, .filler {
     float: left;
+}
+
+.navbar li:nth-last-child(-n+2) {
+    float: right;
+}
+
+.navbar li:nth-last-child(-n+2) a {
+    padding: 4px 6px;
+}
+
+.navbar li:nth-last-child(-n+2) a img {
+    width: 38px;
+    height: 38px;
 }
 
 .navbar .active_btn a {
     background-color: #aa2b2b;
 }
 
-.navbar_btn a {
+.navbar_btn a, .filler a {
     display: block;
     color: white;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
 }
+
 
 .navbar_btn a:hover {
     background-color: #aa2b2b;
@@ -32,16 +46,44 @@
 }
 
 
+.toggleDarkModeImg {
+    content: url('../img/light_mode.png');
+}
+
+
+.dark_mode .toggleDarkModeImg {
+    content: url('../img/dark_mode.png');
+}
+
+
+.enlargeTextImg {
+    content: url('../img/enlarge_text.png');
+}
+
+
+.enlarged_text .enlargeTextImg {
+    content: url('../img/shrink_text.png');
+}
+
+
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
 }
 
-img {
-    /* padding: 0;
-    display: block;
-    margin: 0 auto;
-    max-height: 45%;
-    max-width: 45%; */
+
+.dark_mode  {
+    background-color: black;
+}
+
+.dark_mode h1, .dark_mode p, .dark_mode label, .dark_mode li,
+.dark_mode th {
+    color: white;
+}
+
+.dark_mode textarea {
+    color: white;
+    background-color: rgb(75, 75, 75);
+    border-color: white;
 }

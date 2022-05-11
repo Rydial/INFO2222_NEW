@@ -24,6 +24,65 @@ else
 /******************************************************************************/
 
 var relativePath = location.href.split('/', 4)[3];
+var btn = document.getElementById(relativePath + 'NavBtn');
 
-document.getElementById(relativePath + 'NavBtn').className += ' active_btn';
+if (btn != null)
+    btn.className += ' active_btn';
+
+
+var dark_mode = localStorage.getItem('dark_mode');
+
+if (dark_mode != null && dark_mode == 'True')
+{
+    document.body.className += ' dark_mode';
+}
+
+
+var enlarged_text = localStorage.getItem('enlarged_text');
+
+if (enlarged_text != null && enlarged_text == 'True')
+{
+    document.body.className += ' enlarged_text';
+}
+
+/******************************************************************************/
+
+function toggleDarkMode()
+{
+    var dark_mode = localStorage.getItem('dark_mode');
+
+    if (dark_mode == null || dark_mode == 'False')
+    {
+        localStorage.setItem('dark_mode', 'True');
+
+        document.body.className += ' dark_mode';
+    }
+    else
+    {
+        localStorage.setItem('dark_mode', 'False');
+
+        document.body.className = document.body.className.replace(
+            ' dark_mode', '');
+    }
+}
+
+
+function toggleTextMode()
+{
+    var enlarged_text = localStorage.getItem('enlarged_text');
+
+    if (enlarged_text == null || enlarged_text == 'False')
+    {
+        localStorage.setItem('enlarged_text', 'True');
+
+        document.body.className += ' enlarged_text';
+    }
+    else
+    {
+        localStorage.setItem('enlarged_text', 'False');
+
+        document.body.className = document.body.className.replace(
+            ' enlarged_text', '');
+    }
+}
     
