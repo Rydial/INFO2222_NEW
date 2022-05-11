@@ -15,24 +15,14 @@ async function initUsersList(username)
             for (var user of users)
             {
                 // Create Card
-                var card = document.createElement('ul');                
+                var card = document.createElement('ul');      
+                card.className = 'user_card';          
 
                 if (user['muted'] == 'True')
-                {
-                    card.className = 'user_card muted_card';
+                    card.className += ' muted_card';
 
-                    /* Create Card Avatar */
-                    var card_avatar = document.createElement('img');
-                    card_avatar.src = 'img/mute.png';
-                }
-                else
-                {
-                    card.className = 'user_card';
-
-                    /* Create Card Avatar */
-                    var card_avatar = document.createElement('li');
-                }
-
+                /* Create Card Avatar */
+                var card_avatar = document.createElement('canvas');
                 card_avatar.className = 'card_avatar';
 
                 /* Create Card Name */
@@ -84,6 +74,30 @@ function initCardClickEvents()
     }
 }
 
+
+function initCanvasImages()
+{
+    var muteImg = new Image();
+    muteImg.onload = imageLoaded;
+
+    muteImg.src = 'img/mute.png';
+
+    function imageLoaded()
+    {
+        var muted_cards = document.getElementsByClassName('muted_card');
+
+        // Iterate through Muted Cards
+        for (var card of muted_cards)
+        {
+            // Retrieve Muted Card Avatar
+            var avatar = card.getElementsByClassName('card_avatar')[0];
+
+            // Draw Mute Icon on the Avatar
+            avatar.getContext('2d').drawImage(muteImg, 0, 0, 300, 150);
+        }
+    }
+}
+
 /******************************************************************************/
 
 function initAdminUI()
@@ -96,6 +110,9 @@ function initAdminUI()
         
         // Attach Click Events to each Friend Card
         initCardClickEvents();
+
+        // Initialize Images
+        initCanvasImages();
     });
 }
 
@@ -132,7 +149,6 @@ function changeUserPage()
         {
             if (user['muted'] == 'True')
             {
-                console.log('True!');
                 // Switch Button to Unmute Mode
                 var button = document.getElementById('mute_user_button');
                 button.onclick = unmuteUser;
@@ -140,7 +156,6 @@ function changeUserPage()
             }
             else
             {
-                console.log('False!');
                 // Switch Button to Mute Mode
                 var button = document.getElementById('mute_user_button');
                 button.onclick = muteUser;
@@ -201,10 +216,19 @@ function muteUser()
 {
     // Retrieve Active Card
     var active_card = document.getElementsByClassName('active_card')[0];
-
     active_card.className += ' muted_card';
+
+    // Add Mute Icon
     var card_avatar =  active_card.getElementsByClassName('card_avatar')[0];
-    card_avatar.setAttribute('src', 'img/mute.png');
+    var muteImg = new Image();
+    muteImg.onload = imageLoaded;
+
+    muteImg.src = 'img/mute.png';
+
+    function imageLoaded()
+    {
+        card_avatar.getContext('2d').drawImage(muteImg, 0, 0, 300, 150);
+    }
 
     // Retrieve Active Card Name
     var active_card_name = active_card.getElementsByClassName(
@@ -229,10 +253,19 @@ function unmuteUser()
 {
     // Retrieve Active Card
     var active_card = document.getElementsByClassName('active_card')[0];
-
     active_card.className = active_card.className.replace(' muted_card', '');
+
+    // Remove Mute Icon
     var card_avatar =  active_card.getElementsByClassName('card_avatar')[0];
-    card_avatar.setAttribute('src', 'img/unmute.png');
+    var unmuteImg = new Image();
+    unmuteImg.onload = imageLoaded;
+
+    unmuteImg.src = 'img/unmute.png';
+
+    function imageLoaded()
+    {
+        card_avatar.getContext('2d').drawImage(unmuteImg, 0, 0, 300, 150);
+    }
 
     // Retrieve Active Card Name
     var active_card_name = active_card.getElementsByClassName(

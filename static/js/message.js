@@ -14,28 +14,16 @@ async function initFriendsList(username)
             // Iterate through each User
             for (var user of users)
             {
-                console.log(user['username']);
-                console.log(user['muted']);
-
                 // Create Card
-                var card = document.createElement('ul');                
-
+                var card = document.createElement('ul');      
+                         
                 if (user['muted'] == 'True')
-                {
-                    card.className = 'muted_card';
-
-                    /* Create Card Avatar */
-                    var card_avatar = document.createElement('img');
-                    card_avatar.src = 'img/mute.png';
-                }
+                    card.className = ' muted_card';
                 else
-                {
-                    card.className = 'friend_card';
+                    card.className = 'friend_card'; 
 
-                    /* Create Card Avatar */
-                    var card_avatar = document.createElement('li');
-                }
-
+                /* Create Card Avatar */
+                var card_avatar = document.createElement('canvas');
                 card_avatar.className = 'card_avatar';
 
                 /* Create Card Name */
@@ -87,6 +75,30 @@ function initCardClickEvents()
     }
 }
 
+
+function initCanvasImages()
+{
+    var muteImg = new Image();
+    muteImg.onload = imageLoaded;
+
+    muteImg.src = 'img/mute.png';
+
+    function imageLoaded()
+    {
+        var muted_cards = document.getElementsByClassName('muted_card');
+
+        // Iterate through Muted Cards
+        for (var card of muted_cards)
+        {
+            // Retrieve Muted Card Avatar
+            var avatar = card.getElementsByClassName('card_avatar')[0];
+
+            // Draw Mute Icon on the Avatar
+            avatar.getContext('2d').drawImage(muteImg, 0, 0, 300, 150);
+        }
+    }
+}
+
 /******************************************************************************/
 
 function initMessageUI()
@@ -99,6 +111,9 @@ function initMessageUI()
         
         // Attach Click Events to each Friend Card
         initCardClickEvents();
+
+        // Initialize Images
+        initCanvasImages();
     });
 }
 
@@ -114,36 +129,29 @@ function changePage(page)
 
     if (active_page.length == 1)
     {
-        // Deselect Active Page
-        active_page[0].className = active_page[0].className.replace(
-            ' active_page', '');
-    }
+        // Retrieve User Details
+        fetch('/user_details.json?username=' + getCookie('username'))
+        .then(response => response.json())
+        .then(function(user)
+        {
+            if (page == 'message_page' && user['muted'] == 'True')
+            {
+                alert('\n                           ' +
+                      'You are currently muted.\n'    +
+                      '\n                You cannot send or receive messages.');
 
-    // Retrieve Specified Page
-    var target_page = document.getElementById(page);
+                return;
+            }
 
-    // Set Main Page as Active Page
-    target_page.className += " active_page";
+            // Deselect Active Page
+            active_page[0].className = active_page[0].className.replace(
+                ' active_page', '');
 
-    if (page == 'main_page')
-    {
-        // Set Page Name to Selected User's Name
-        var main_page_name = target_page.getElementsByClassName(
-            'page_name')[0];
-        var active_card = document.getElementsByClassName('active_card')[0];
-        var active_card_name = active_card.getElementsByClassName(
-            'card_name')[0];
-        main_page_name.innerHTML = active_card_name.innerHTML;
-    }
-    else if (page == 'inbox_page')
-    {
-        // Retrieve Messages send to the User
-        retrieveMessages().then(function() {
-            // Retrieved Messages
+            setActivePage(page);
         });
     }
-    else if (page == 'message_page')
-        clearMessageOutput();
+    else
+        setActivePage(page); 
 }
 
 
@@ -172,4 +180,34 @@ function sendMessage()
         // Clear Text Input
         msgInput.value = '';
     });
+}
+
+
+function setActivePage(page)
+{
+    // Retrieve Specified Page
+    var target_page = document.getElementById(page);
+
+    // Set Main Page as Active Page
+    target_page.className += " active_page";
+
+    if (page == 'main_page')
+    {
+        // Set Page Name to Selected User's Name
+        var main_page_name = target_page.getElementsByClassName(
+            'page_name')[0];
+        var active_card = document.getElementsByClassName('active_card')[0];
+        var active_card_name = active_card.getElementsByClassName(
+            'card_name')[0];
+        main_page_name.innerHTML = active_card_name.innerHTML;
+    }
+    else if (page == 'inbox_page')
+    {
+        // Retrieve Messages send to the User
+        retrieveMessages().then(function() {
+            // Retrieved Messages
+        });
+    }
+    else if (page == 'message_page')
+        clearMessageOutput();
 }
