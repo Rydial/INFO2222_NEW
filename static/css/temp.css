@@ -20,8 +20,14 @@
 
 .navbar li:nth-last-child(-n+2) a img {
     width: 38px;
-    height: 38px;
 }
+
+
+.enlarged_text .navbar li:nth-last-child(-n+2) a img {
+    height: 48px;
+    width: 48px;
+}
+
 
 .navbar .active_btn a {
     background-color: #aa2b2b;
@@ -86,4 +92,16 @@ html, body {
     color: white;
     background-color: rgb(75, 75, 75);
     border-color: white;
+}
+
+
+.enlarged_text h1 {
+    font-size: 4em;
+}
+
+
+.enlarged_text p, .enlarged_text label, .enlarged_text input,
+.enlarged_text button, .enlarged_text li, .enlarged_text td,
+.enlarged_text textarea {
+    font-size: xx-large;
 }
